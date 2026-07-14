@@ -37,10 +37,7 @@ export const projectsService = {
   },
 
   async update(id: string, data: UpdateProjectDto): Promise<Project> {
-    const response = await apiClient.patch<unknown>(
-      `/projects/${id}`,
-      data,
-    );
+    const response = await apiClient.patch<unknown>(`/projects/${id}`, data);
     const payload = normalizeProjectPayload<unknown>(response);
     return payload as Project;
   },

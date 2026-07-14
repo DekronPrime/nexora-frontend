@@ -16,8 +16,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useMembers, useProject, useProjectTasks } from "@/hooks";
+import { InviteMemberModal } from "@/components/modals";
+import { activityService } from "@/lib/services";
 import { cn } from "@/lib/utils";
-import { Project, Task, TaskStatus } from "@/types";
+import { ActivityLog, Task, TaskStatus } from "@/types";
 import { format } from "date-fns";
 import {
   ArrowLeft,
@@ -32,7 +34,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
 const statusColors: Record<TaskStatus, string> = {
@@ -49,33 +51,26 @@ const statusLabels: Record<TaskStatus, string> = {
   done: "Done",
 };
 
-const testProject: Project = {
-  id: "75a56353-f816-4af3-9e58-11ee6384129a",
-  title: "Test1",
-  description: "something",
-  color: "#3B82F6",
-  icon: "code",
-  ownerId: "41e16ae9-c874-4629-b2cf-cbd9e57cfdd5",
-  createdAt: "2026-07-06T17:58:53.212Z",
-  updatedAt: "2026-07-06T17:58:53.212Z",
-  members: [
-    {
-      id: "b96e7ee6-7bf8-4971-8337-0d11ac4a9d0c",
-      projectId: "75a56353-f816-4af3-9e58-11ee6384129a",
-      userId: "41e16ae9-c874-4629-b2cf-cbd9e57cfdd5",
-      role: "owner",
-      joinedAt: "2026-07-06T17:58:53.233Z",
-      user: {
-        id: "41e16ae9-c874-4629-b2cf-cbd9e57cfdd5",
-        email: "johnydepp@gmail.com",
-        fullName: "Johny Depp",
-        avatarUrl: null,
-        isVerified: true,
-        createdAt: "2026-07-06T17:16:07.473Z",
-        updatedAt: "2026-07-06T17:16:07.473Z",
-      },
-    },
-  ],
+const formatActivityMessage = (activity: ActivityLog) => {
+  const actor = activity.user?.fullName || "Someone";
+  const entity = activity.entityType || "item";
+
+  switch (activity.action.toLowerCase()) {
+    case "created":
+      return `${actor} created ${entity}`;
+    case "updated":
+      return `${actor} updated ${entity}`;
+    case "deleted":
+      return `${actor} deleted ${entity}`;
+    case "completed":
+      return `${actor} completed ${entity}`;
+    case "moved":
+      return `${actor} moved ${entity}`;
+    case "assigned":
+      return `${actor} assigned ${entity}`;
+    default:
+      return `${actor} ${activity.action} ${entity}`;
+  }
 };
 
 export default function ProjectPage() {
@@ -83,13 +78,11 @@ export default function ProjectPage() {
   const router = useRouter();
   const projectId = params.id as string;
 
-  let {
+  const {
     project,
     isLoading: projectLoading,
     error: projectError,
   } = useProject(projectId);
-
-  project = testProject;
 
   const {
     tasks,
@@ -97,12 +90,49 @@ export default function ProjectPage() {
     updateTaskStatus,
     fetchTasks,
   } = useProjectTasks(projectId);
-  const { members } = useMembers(projectId);
+  const { members, inviteMember } = useMembers(projectId);
   const taskList = Array.isArray(tasks) ? tasks : [];
   const membersList = Array.isArray(members) ? members : [];
 
   const [addTaskModalOpen, setAddTaskModalOpen] = useState(false);
+  const [inviteModalOpen, setInviteModalOpen] = useState(false);
   const [defaultStatus, setDefaultStatus] = useState<TaskStatus>("todo");
+  const [activityLogs, setActivityLogs] = useState<ActivityLog[]>([]);
+  const [activityLoading, setActivityLoading] = useState(false);
+  const [activityError, setActivityError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!projectId) return;
+
+    let isMounted = true;
+
+    const loadActivity = async () => {
+      setActivityLoading(true);
+      setActivityError(null);
+
+      try {
+        const data = await activityService.getProjectActivity(projectId);
+        if (isMounted) {
+          setActivityLogs(Array.isArray(data) ? data : []);
+        }
+      } catch (error) {
+        if (isMounted) {
+          setActivityError("Unable to load activity history");
+          setActivityLogs([]);
+        }
+      } finally {
+        if (isMounted) {
+          setActivityLoading(false);
+        }
+      }
+    };
+
+    loadActivity();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [projectId]);
 
   const taskStats = useMemo(() => {
     const total = taskList.length;
@@ -352,13 +382,46 @@ export default function ProjectPage() {
               <CardTitle>Activity Log</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-slate-500 text-center py-8">
-                Activity logs will appear here. Activity logging requires the{" "}
-                <code className="bg-slate-100 px-1 py-0.5 rounded text-xs">
-                  /api/activity
-                </code>{" "}
-                endpoint to be working.
-              </p>
+              {activityLoading ? (
+                <LoadingState message="Loading activity..." />
+              ) : activityError ? (
+                <p className="text-sm text-slate-500 text-center py-8">
+                  {activityError}
+                </p>
+              ) : activityLogs.length === 0 ? (
+                <p className="text-sm text-slate-500 text-center py-8">
+                  No activity yet for this project.
+                </p>
+              ) : (
+                <div className="space-y-3">
+                  {activityLogs.map((activity) => (
+                    <div
+                      key={activity.id}
+                      className="flex items-start gap-3 rounded-lg border border-slate-200 bg-slate-50 p-3"
+                    >
+                      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-200 text-sm font-semibold text-slate-700">
+                        {(activity.user?.fullName || "U")
+                          .split(" ")
+                          .map((part) => part[0])
+                          .join("")
+                          .slice(0, 2)
+                          .toUpperCase()}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="font-medium text-slate-900">
+                          {formatActivityMessage(activity)}
+                        </p>
+                        <p className="mt-1 text-sm text-slate-500">
+                          {format(
+                            new Date(activity.createdAt),
+                            "MMM d, yyyy • HH:mm",
+                          )}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
@@ -368,7 +431,12 @@ export default function ProjectPage() {
             <CardHeader>
               <CardTitle className="flex items-center justify-between">
                 <span>Team Members</span>
-                <Button size="sm" variant="outline" className="gap-2">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="gap-2"
+                  onClick={() => setInviteModalOpen(true)}
+                >
                   <Users className="h-4 w-4" />
                   Invite Member
                 </Button>
@@ -429,6 +497,12 @@ export default function ProjectPage() {
         onOpenChange={setAddTaskModalOpen}
         projectId={projectId}
         defaultStatus={defaultStatus}
+      />
+      <InviteMemberModal
+        open={inviteModalOpen}
+        onOpenChange={setInviteModalOpen}
+        projectId={projectId}
+        invite={inviteMember}
       />
     </div>
   );

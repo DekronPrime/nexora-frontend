@@ -137,35 +137,6 @@ function ProjectCard({ project }: { project: Project }) {
   );
 }
 
-const testProject: Project = {
-  id: "75a56353-f816-4af3-9e58-11ee6384129a",
-  title: "Test1",
-  description: "something",
-  color: "#3B82F6",
-  icon: "code",
-  ownerId: "41e16ae9-c874-4629-b2cf-cbd9e57cfdd5",
-  createdAt: "2026-07-06T17:58:53.212Z",
-  updatedAt: "2026-07-06T17:58:53.212Z",
-  members: [
-    {
-      id: "b96e7ee6-7bf8-4971-8337-0d11ac4a9d0c",
-      projectId: "75a56353-f816-4af3-9e58-11ee6384129a",
-      userId: "41e16ae9-c874-4629-b2cf-cbd9e57cfdd5",
-      role: "owner",
-      joinedAt: "2026-07-06T17:58:53.233Z",
-      user: {
-        id: "41e16ae9-c874-4629-b2cf-cbd9e57cfdd5",
-        email: "johnydepp@gmail.com",
-        fullName: "Johny Depp",
-        avatarUrl: null,
-        isVerified: true,
-        createdAt: "2026-07-06T17:16:07.473Z",
-        updatedAt: "2026-07-06T17:16:07.473Z",
-      },
-    },
-  ],
-};
-
 export default function DashboardPage() {
   const {
     projects = [],
@@ -174,9 +145,7 @@ export default function DashboardPage() {
     fetchProjects,
     deleteProject,
   } = useProjects();
-  const projectsList = [testProject];
-  // const projectsList = Array.isArray(projects) ? projects : [testProject];
-  console.log(projectsList);
+  const projectsList = Array.isArray(projects) ? projects : [];
 
   const [createModalOpen, setCreateModalOpen] = useState(false);
 
@@ -211,7 +180,6 @@ export default function DashboardPage() {
         <>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {projectsList.map((project) => (
-              // <ProjectCard key={testProject.id} project={testProject} />
               <ProjectCard key={project.id} project={project} />
             ))}
 

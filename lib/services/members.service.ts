@@ -6,13 +6,13 @@ import {
 
 export const membersService = {
   async getProjectMembers(projectId: string): Promise<ProjectMember[]> {
-    const response = await apiClient.get<{ data: ProjectMember[] }>(`/members?projectId=${projectId}`);
-    return response.data;
+    const response = await apiClient.get<unknown>(`/members?projectId=${projectId}`);
+    return Array.isArray(response) ? (response as ProjectMember[]) : [];
   },
 
   async invite(data: InviteMemberDto): Promise<ProjectMember> {
-    const response = await apiClient.post<{ data: ProjectMember }>('/members/invite', data);
-    return response.data;
+    const response = await apiClient.post<unknown>('/members/invite', data);
+    return response as ProjectMember;
   },
 
   async remove(memberId: string): Promise<void> {

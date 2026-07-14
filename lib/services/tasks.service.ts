@@ -27,28 +27,31 @@ function buildQueryString(filters: TaskFilters): string {
 export const tasksService = {
   async getAll(filters?: TaskFilters): Promise<Task[]> {
     const queryString = filters ? buildQueryString(filters) : '';
-    const response = await apiClient.get<{ data: Task[] }>(`/tasks${queryString}`);
-    return response.data;
+    const response = await apiClient.get<unknown>(`/tasks${queryString}`);
+    return Array.isArray(response) ? (response as Task[]) : [];
   },
 
   async getByProject(projectId: string): Promise<Task[]> {
-    const response = await apiClient.get<{ data: Task[] }>(`/tasks/project/${projectId}`);
-    return response.data;
+    const response = await apiClient.get<unknown>(`/tasks/project/${projectId}`);
+    return Array.isArray(response) ? (response as Task[]) : [];
   },
 
   async getById(id: string): Promise<Task> {
-    const response = await apiClient.get<{ data: Task }>(`/tasks/${id}`);
-    return response.data;
+    const response = await apiClient.get<unknown>(`/tasks/${id}`);
+    return response as Task;
   },
 
   async create(data: CreateTaskDto): Promise<Task> {
-    const response = await apiClient.post<{ data: Task }>('/tasks', data);
-    return response.data;
+    const response = await apiClient.post<unknown>('/tasks', data);
+    if (response && typeof response === 'object' && 'id' in response) {
+      return response as Task;
+    }
+    return response as Task;
   },
 
   async update(id: string, data: UpdateTaskDto): Promise<Task> {
-    const response = await apiClient.patch<{ data: Task }>(`/tasks/${id}`, data);
-    return response.data;
+    const response = await apiClient.patch<unknown>(`/tasks/${id}`, data);
+    return response as Task;
   },
 
   async delete(id: string): Promise<void> {
