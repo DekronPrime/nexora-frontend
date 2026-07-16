@@ -22,6 +22,11 @@ export function useTasks(filters?: TaskFilters): UseTasksReturn {
   const [error, setError] = useState<string | null>(null);
   const { isAuthenticated } = useAuth();
 
+  const projectId = filters?.projectId;
+  const status = filters?.status;
+  const priority = filters?.priority;
+  const assigneeId = filters?.assigneeId;
+
   const fetchTasks = useCallback(async () => {
     if (!isAuthenticated) {
       setTasks([]);
@@ -32,16 +37,16 @@ export function useTasks(filters?: TaskFilters): UseTasksReturn {
     setIsLoading(true);
     setError(null);
     try {
-      const data = filters?.projectId
-        ? await tasksService.getByProject(filters.projectId)
-        : await tasksService.getAll(filters);
+      const data = projectId
+        ? await tasksService.getByProject(projectId)
+        : await tasksService.getAll({ projectId, status, priority, assigneeId });
       setTasks(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch tasks');
     } finally {
       setIsLoading(false);
     }
-  }, [filters, isAuthenticated]);
+  }, [projectId, status, priority, assigneeId, isAuthenticated]);
 
   useEffect(() => {
     fetchTasks();

@@ -3,23 +3,27 @@ import { Notification } from '@/types';
 
 export const notificationsService = {
   async getAll(): Promise<Notification[]> {
-    const response = await apiClient.get<{ data: Notification[] }>('/notifications');
-    return response.data;
+    const response = await apiClient.get<unknown>('/notifications');
+    return Array.isArray(response) ? (response as Notification[]) : [];
   },
 
   async getById(id: string): Promise<Notification> {
-    const response = await apiClient.get<{ data: Notification }>(`/notifications/${id}`);
-    return response.data;
+    const response = await apiClient.get<unknown>(`/notifications/${id}`);
+    return response as Notification;
   },
 
   async getUnreadCount(): Promise<number> {
-    const response = await apiClient.get<{ count: number }>('/notifications/unread-count');
-    return response.count;
+    const response = await apiClient.get<unknown>('/notifications/unread-count');
+    return typeof response === 'object' && response && 'count' in response
+      ? Number((response as { count?: number }).count ?? 0)
+      : 0;
   },
 
   async markAsRead(id: string): Promise<Notification> {
-    const response = await apiClient.patch<{ data: Notification }>(`/notifications/${id}`);
-    return response.data;
+    const response = await apiClient.patch<unknown>(`/notifications/${id}`, {
+      "isRead": true,
+    });
+    return response as Notification;
   },
 
   async markAllAsRead(): Promise<void> {

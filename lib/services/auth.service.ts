@@ -21,13 +21,13 @@ export const authService = {
   },
 
   async getProfile(): Promise<User> {
-    const response = await apiClient.get<{ data: User }>('/auth/me');
-    return response.data;
+    const response = await apiClient.get<unknown>('/auth/me');
+    return response as User;
   },
 
   async updateProfile(data: UpdateProfileDto): Promise<User> {
-    const response = await apiClient.patch<{ data: User }>('/auth/me', data);
-    return response.data;
+    const response = await apiClient.patch<unknown>('/auth/me', data);
+    return response as User;
   },
 
   logout() {

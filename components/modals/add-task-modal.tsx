@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import {
   Dialog,
   DialogContent,
@@ -11,27 +11,37 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Calendar } from '@/components/ui/calendar';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { useMembers, useTasks } from '@/hooks';
-import { TaskStatus, TaskPriority, ProjectMember } from '@/types';
-import { toast } from 'sonner';
-import { cn } from '@/lib/utils';
-import { format } from 'date-fns';
-import { Loader2, CalendarIcon } from 'lucide-react';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { useMembers, useTasks } from "@/hooks";
+import { TaskStatus, TaskPriority, ProjectMember } from "@/types";
+import { toast } from "sonner";
+import { cn } from "@/lib/utils";
+import { format } from "date-fns";
+import { Loader2, CalendarIcon } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const addTaskSchema = z.object({
-  title: z.string().min(1, 'Title is required').max(100),
+  title: z.string().min(1, "Title is required").max(100),
   description: z.string().max(3000).optional(),
-  status: z.enum(['todo', 'in_progress', 'review', 'done'] as const),
-  priority: z.enum(['low', 'medium', 'high', 'urgent'] as const),
+  status: z.enum(["todo", "in_progress", "review", "done"] as const),
+  priority: z.enum(["low", "medium", "high", "urgent"] as const),
   assigneeId: z.string().nullable().optional(),
   dueDate: z.date().nullable().optional(),
 });
@@ -45,9 +55,14 @@ interface AddTaskModalProps {
   defaultStatus?: TaskStatus;
 }
 
-export function AddTaskModal({ open, onOpenChange, projectId, defaultStatus = 'todo' }: AddTaskModalProps) {
+export function AddTaskModal({
+  open,
+  onOpenChange,
+  projectId,
+  defaultStatus = "todo",
+}: AddTaskModalProps) {
   const [isLoading, setIsLoading] = useState(false);
-  const { members } = useMembers(projectId);
+  const { members = [] } = useMembers(projectId);
   const { createTask } = useTasks({ projectId });
 
   const {
@@ -61,34 +76,50 @@ export function AddTaskModal({ open, onOpenChange, projectId, defaultStatus = 't
     resolver: zodResolver(addTaskSchema),
     defaultValues: {
       status: defaultStatus,
-      priority: 'medium',
+      priority: "medium",
       assigneeId: null,
       dueDate: null,
     },
   });
 
-  const selectedAssignee = watch('assigneeId');
-  const selectedPriority = watch('priority');
-  const selectedStatus = watch('status');
-  const selectedDueDate = watch('dueDate');
+  const selectedAssignee = watch("assigneeId");
+  const selectedPriority = watch("priority");
+  const selectedStatus = watch("status");
+  const selectedDueDate = watch("dueDate");
 
   const onSubmit = async (data: AddTaskFormData) => {
     setIsLoading(true);
     try {
-      await createTask({
+      const taskPayload: any = {
         projectId,
         title: data.title,
-        description: data.description || '',
+        description: data.description || "",
         status: data.status,
         priority: data.priority,
-        assigneeId: data.assigneeId || null,
-        dueDate: data.dueDate ? data.dueDate.toISOString() : null,
-      });
-      toast.success('Task created successfully');
+      };
+
+      // Only include assigneeId if it's set
+      if (data.assigneeId) {
+        taskPayload.assigneeId = data.assigneeId;
+      }
+
+      // Only include dueDate if it's set
+      if (data.dueDate) {
+        taskPayload.dueDate = data.dueDate.toISOString();
+      }
+
+      console.log("Creating task with data:", taskPayload);
+
+      const result = await createTask(taskPayload);
+
+      console.log("Task created successfully:", result);
+      toast.success("Task created successfully");
       onOpenChange(false);
       reset();
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to create task';
+      console.error("Error creating task:", error);
+      const message =
+        error instanceof Error ? error.message : "Failed to create task";
       toast.error(message);
     } finally {
       setIsLoading(false);
@@ -115,11 +146,7 @@ export function AddTaskModal({ open, onOpenChange, projectId, defaultStatus = 't
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
           <div className="space-y-2">
             <Label htmlFor="title">Title</Label>
-            <Input
-              id="title"
-              placeholder="Task title"
-              {...register('title')}
-            />
+            <Input id="title" placeholder="Task title" {...register("title")} />
             {errors.title && (
               <p className="text-sm text-destructive">{errors.title.message}</p>
             )}
@@ -131,10 +158,12 @@ export function AddTaskModal({ open, onOpenChange, projectId, defaultStatus = 't
               id="description"
               placeholder="Add a description..."
               rows={3}
-              {...register('description')}
+              {...register("description")}
             />
             {errors.description && (
-              <p className="text-sm text-destructive">{errors.description.message}</p>
+              <p className="text-sm text-destructive">
+                {errors.description.message}
+              </p>
             )}
           </div>
 
@@ -143,7 +172,7 @@ export function AddTaskModal({ open, onOpenChange, projectId, defaultStatus = 't
               <Label>Status</Label>
               <Select
                 value={selectedStatus}
-                onValueChange={(value: TaskStatus) => setValue('status', value)}
+                onValueChange={(value: TaskStatus) => setValue("status", value)}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select status" />
@@ -161,7 +190,9 @@ export function AddTaskModal({ open, onOpenChange, projectId, defaultStatus = 't
               <Label>Priority</Label>
               <Select
                 value={selectedPriority}
-                onValueChange={(value: TaskPriority) => setValue('priority', value)}
+                onValueChange={(value: TaskPriority) =>
+                  setValue("priority", value)
+                }
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select priority" />
@@ -180,21 +211,29 @@ export function AddTaskModal({ open, onOpenChange, projectId, defaultStatus = 't
             <div className="space-y-2">
               <Label>Assignee</Label>
               <Select
-                value={selectedAssignee || ''}
-                onValueChange={(value) => setValue('assigneeId', value || null)}
+                value={selectedAssignee || "unassigned"}
+                onValueChange={(value) =>
+                  setValue("assigneeId", value === "unassigned" ? null : value)
+                }
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Unassigned" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Unassigned</SelectItem>
+                  <SelectItem value="unassigned">Unassigned</SelectItem>
                   {members.map((member: ProjectMember) => (
                     <SelectItem key={member.id} value={member.userId}>
                       <div className="flex items-center gap-2">
                         <Avatar className="h-5 w-5">
-                          <AvatarImage src={member.user.avatarUrl || undefined} />
+                          <AvatarImage
+                            src={member.user.avatarUrl || undefined}
+                          />
                           <AvatarFallback className="text-[10px]">
-                            {member.user.fullName.split(' ').map(n => n[0]).join('').toUpperCase()}
+                            {member.user.fullName
+                              .split(" ")
+                              .map((n) => n[0])
+                              .join("")
+                              .toUpperCase()}
                           </AvatarFallback>
                         </Avatar>
                         <span>{member.user.fullName}</span>
@@ -212,19 +251,21 @@ export function AddTaskModal({ open, onOpenChange, projectId, defaultStatus = 't
                   <Button
                     variant="outline"
                     className={cn(
-                      'w-full justify-start text-left font-normal',
-                      !selectedDueDate && 'text-muted-foreground'
+                      "w-full justify-start text-left font-normal",
+                      !selectedDueDate && "text-muted-foreground",
                     )}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {selectedDueDate ? format(selectedDueDate, 'PPP') : 'No date'}
+                    {selectedDueDate
+                      ? format(selectedDueDate, "PPP")
+                      : "No date"}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
                   <Calendar
                     mode="single"
                     selected={selectedDueDate || undefined}
-                    onSelect={(date) => setValue('dueDate', date || null)}
+                    onSelect={(date) => setValue("dueDate", date || null)}
                     initialFocus
                   />
                 </PopoverContent>
@@ -247,7 +288,7 @@ export function AddTaskModal({ open, onOpenChange, projectId, defaultStatus = 't
                   Creating...
                 </>
               ) : (
-                'Create task'
+                "Create task"
               )}
             </Button>
           </DialogFooter>
