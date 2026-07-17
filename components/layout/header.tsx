@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
   Star,
@@ -15,13 +15,13 @@ import {
   Menu,
   X,
   ChevronDown,
-} from 'lucide-react';
-import { useAuth, useNotifications } from '@/contexts';
-import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
+} from "lucide-react";
+import { useAuth, useNotifications } from "@/contexts";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -29,17 +29,17 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from "@/components/ui/dropdown-menu";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '@/components/ui/popover';
-import { NotificationItem } from '@/components/notifications/notification-item';
+} from "@/components/ui/popover";
+import { NotificationItem } from "@/components/notifications/notification-item";
 
 const navLinks = [
-  { href: '/dashboard', label: 'Recent', icon: LayoutDashboard },
-  { href: '/important', label: 'Important', icon: Star },
+  { href: "/dashboard", label: "Recent", icon: LayoutDashboard },
+  { href: "/important", label: "Important", icon: Star },
 ];
 
 export function Header() {
@@ -47,29 +47,33 @@ export function Header() {
   const { user, logout } = useAuth();
   const { notifications, unreadCount } = useNotifications();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
 
   const notificationsList = Array.isArray(notifications) ? notifications : [];
 
   const userInitials = user?.fullName
     ? user.fullName
-        .split(' ')
+        .split(" ")
         .map((n) => n[0])
-        .join('')
+        .join("")
         .toUpperCase()
-    : 'U';
+    : "U";
 
   if (!user) return null;
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-16 items-center">
+    <header className="sticky top-0 z-50 w-full border-b-[3px] border-primary bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="container flex h-16 items-center mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center gap-6 mr-4">
-          <Link href="/dashboard" className="flex items-center gap-2 font-semibold text-lg">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center">
-              <span className="text-white font-bold text-sm">B</span>
+          <Link
+            href="/dashboard"
+            className="flex items-center gap-2 font-semibold text-lg"
+          >
+            <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-blue-600 to-cyan-500 flex items-center justify-center shadow-lg shadow-blue-500/20">
+              <span className="text-white font-bold text-lg">N</span>
             </div>
-            <span className="hidden sm:inline">BoardMaster</span>
+            <span className="font-bold font-unbounded bg-gradient-to-br from-blue-600 to-cyan-500 text-xl bg-clip-text text-transparent">
+              Nexora
+            </span>
           </Link>
 
           <nav className="hidden md:flex items-center gap-1">
@@ -78,10 +82,10 @@ export function Header() {
                 key={link.href}
                 href={link.href}
                 className={cn(
-                  'flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors',
+                  "flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors",
                   pathname.startsWith(link.href)
-                    ? 'bg-muted text-foreground'
-                    : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                    ? "bg-muted text-foreground border-2 border-muted-foreground"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted/50",
                 )}
               >
                 <link.icon className="h-4 w-4" />
@@ -92,31 +96,6 @@ export function Header() {
         </div>
 
         <div className="flex-1 flex items-center justify-end gap-2">
-          <Popover open={searchOpen} onOpenChange={setSearchOpen}>
-            <PopoverTrigger asChild>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="hidden md:flex items-center gap-2 text-muted-foreground"
-              >
-                <Search className="h-4 w-4" />
-                <span className="text-sm">Search...</span>
-                <kbd className="pointer-events-none hidden lg:inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-xs font-medium text-muted-foreground">
-                  <span className="text-xs">Ctrl</span>K
-                </kbd>
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-80 p-4" align="end">
-              <div className="space-y-4">
-                <h4 className="font-medium">Search</h4>
-                <Input placeholder="Search projects, tasks..." autoFocus />
-                <p className="text-xs text-muted-foreground">
-                  Quick search across all your projects and tasks
-                </p>
-              </div>
-            </PopoverContent>
-          </Popover>
-
           <Popover>
             <PopoverTrigger asChild>
               <Button variant="ghost" size="icon" className="relative">
@@ -126,12 +105,12 @@ export function Header() {
                     variant="destructive"
                     className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs"
                   >
-                    {unreadCount > 9 ? '9+' : unreadCount}
+                    {unreadCount > 9 ? "9+" : unreadCount}
                   </Badge>
                 )}
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-80 p-0" align="end">
+            <PopoverContent className="w-96 p-0" align="end">
               <div className="p-4 border-b">
                 <h4 className="font-semibold">Notifications</h4>
                 {unreadCount > 0 && (
@@ -146,9 +125,14 @@ export function Header() {
                     No notifications
                   </div>
                 ) : (
-                  notificationsList.slice(0, 5).map((notification) => (
-                    <NotificationItem key={notification.id} notification={notification} />
-                  ))
+                  notificationsList
+                    .slice(0, 5)
+                    .map((notification) => (
+                      <NotificationItem
+                        key={notification.id}
+                        notification={notification}
+                      />
+                    ))
                 )}
               </div>
               <div className="p-2 border-t">
@@ -163,41 +147,15 @@ export function Header() {
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="hidden md:flex">
-                <HelpCircle className="h-5 w-5" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem>
-                <Link href="/faq" className="w-full">FAQ</Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Link href="/help" className="w-full">Help Center</Link>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon">
-                <Settings className="h-5 w-5" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem>
-                <Link href="/settings" className="w-full">Settings</Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Link href="/settings/profile" className="w-full">Profile</Link>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="flex items-center gap-2 pl-2 pr-3">
+              <Button
+                variant="ghost"
+                className="flex border-2 hover:bg-accent border-border items-center gap-2 pl-2 pr-3"
+              >
                 <Avatar className="h-8 w-8">
-                  <AvatarImage src={user.avatarUrl || undefined} alt={user.fullName} />
+                  <AvatarImage
+                    src={user.avatarUrl || undefined}
+                    alt={user.fullName}
+                  />
                   <AvatarFallback className="bg-gradient-to-br from-blue-500 to-cyan-500 text-white text-xs font-medium">
                     {userInitials}
                   </AvatarFallback>
@@ -240,7 +198,11 @@ export function Header() {
             className="md:hidden"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
-            {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            {mobileMenuOpen ? (
+              <X className="h-5 w-5" />
+            ) : (
+              <Menu className="h-5 w-5" />
+            )}
           </Button>
         </div>
       </div>
@@ -254,10 +216,10 @@ export function Header() {
                 href={link.href}
                 onClick={() => setMobileMenuOpen(false)}
                 className={cn(
-                  'flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium',
+                  "flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium",
                   pathname.startsWith(link.href)
-                    ? 'bg-muted text-foreground'
-                    : 'text-muted-foreground'
+                    ? "bg-muted text-foreground"
+                    : "text-muted-foreground",
                 )}
               >
                 <link.icon className="h-4 w-4" />

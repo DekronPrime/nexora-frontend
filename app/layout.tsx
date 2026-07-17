@@ -1,18 +1,31 @@
 import "./globals.css";
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Unbounded, Sofia_Sans } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
 import { AuthProvider } from "@/contexts";
 
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
+  weight: ["400", "500", "600", "700"],
+});
+
+const unbounded = Unbounded({
+  subsets: ["latin"],
+  variable: "--font-unbounded",
+  weight: ["400", "500", "600", "700"],
+});
+
+const sofiaSans = Sofia_Sans({
+  subsets: ["latin"],
+  variable: "--font-sofia",
+  weight: ["400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
   title: {
-    default: "BoardMaster - Modern Project Management",
-    template: "%s | BoardMaster",
+    default: "Nexora - Modern Project Management",
+    template: "%s | Nexora",
   },
   description:
     "A modern Trello-like task management application for teams and individuals.",
@@ -22,31 +35,31 @@ export const metadata: Metadata = {
     "kanban",
     "team collaboration",
   ],
-  authors: [{ name: "BoardMaster Team" }],
-  creator: "BoardMaster",
+  authors: [{ name: "Nexora Team" }],
+  creator: "Nexora Team",
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://boardmaster.app",
-    siteName: "BoardMaster",
-    title: "BoardMaster - Modern Project Management",
+    url: "https://nexora.app",
+    siteName: "Nexora",
+    title: "Nexora - Modern Project Management",
     description:
       "A modern Trello-like task management application for teams and individuals.",
     images: [
       {
-        url: "https://boardmaster.app/og-image.png",
+        url: "https://nexora.app/og-image.png",
         width: 1200,
         height: 630,
-        alt: "BoardMaster",
+        alt: "Nexora",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "BoardMaster - Modern Project Management",
+    title: "Nexora - Modern Project Management",
     description:
       "A modern Trello-like task management application for teams and individuals.",
-    images: ["https://boardmaster.app/og-image.png"],
+    images: ["https://nexora.app/og-image.png"],
   },
 };
 
@@ -57,7 +70,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.variable} font-sans antialiased`}>
+      <body
+        className={`${inter.variable} ${unbounded.variable} ${sofiaSans.variable} font-sans antialiased`}
+      >
         <AuthProvider>
           {children}
           <Toaster position="bottom-right" richColors closeButton />
