@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 import {
   ArrowRight,
   CheckCircle,
@@ -10,71 +10,81 @@ import {
   Zap,
   Shield,
   BarChart3,
-} from 'lucide-react';
-import { motion } from 'framer-motion';
+} from "lucide-react";
+import { motion } from "framer-motion";
 
 const features = [
   {
     icon: Layout,
-    title: 'Kanban Boards',
-    description: 'Organize your tasks with intuitive drag-and-drop columns.',
+    title: "Kanban Boards",
+    description: "Organize your tasks with intuitive drag-and-drop columns.",
   },
   {
     icon: Users,
-    title: 'Team Collaboration',
-    description: 'Invite team members and assign tasks seamlessly.',
+    title: "Team Collaboration",
+    description: "Invite team members and assign tasks seamlessly.",
   },
   {
     icon: Zap,
-    title: 'Real-time Updates',
-    description: 'Stay in sync with instant notifications and activity logs.',
+    title: "Real-time Updates",
+    description: "Stay in sync with instant notifications and activity logs.",
   },
   {
     icon: Shield,
-    title: 'Secure & Private',
-    description: 'Your data is protected with enterprise-grade security.',
+    title: "Secure & Private",
+    description: "Your data is protected with enterprise-grade security.",
   },
   {
     icon: BarChart3,
-    title: 'Progress Tracking',
-    description: 'Monitor project progress with visual dashboards.',
+    title: "Progress Tracking",
+    description: "Monitor project progress with visual dashboards.",
   },
   {
     icon: CheckCircle,
-    title: 'Task Management',
-    description: 'Create, prioritize, and track tasks with ease.',
+    title: "Task Management",
+    description: "Create, prioritize, and track tasks with ease.",
   },
 ];
 
 const stats = [
-  { value: '10K+', label: 'Active Users' },
-  { value: '50K+', label: 'Projects Created' },
-  { value: '99.9%', label: 'Uptime' },
-  { value: '4.9', label: 'User Rating' },
+  { value: "10K+", label: "Active Users" },
+  { value: "50K+", label: "Projects Created" },
+  { value: "99.9%", label: "Uptime" },
+  { value: "4.9", label: "User Rating" },
 ];
 
 export default function LandingPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-50">
-      {/* Navigation */}
-      <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-lg border-b border-slate-200">
+      <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-lg border-b-[3px] border-primary">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            <Link href="/" className="flex items-center gap-2">
+            <Link href="/" className="flex items-center gap-2 min-w-[175px]">
               <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-blue-600 to-cyan-500 flex items-center justify-center shadow-lg shadow-blue-500/20">
-                <span className="text-white font-bold text-lg">B</span>
+                <span className="text-white font-bold text-lg">N</span>
               </div>
-              <span className="font-semibold text-xl text-slate-900">BoardMaster</span>
+              <span className="font-bold font-unbounded bg-gradient-to-br from-blue-600 to-cyan-500 text-xl bg-clip-text text-transparent">
+                Nexora
+              </span>
             </Link>
             <div className="hidden md:flex items-center gap-6">
-              <a href="#features" className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">
+              <a
+                href="#about"
+                className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors"
+              >
+                About
+              </a>
+              <a
+                href="#features"
+                className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors"
+              >
                 Features
               </a>
-              <a href="#pricing" className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">
+              <a
+                href="#pricing"
+                className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors"
+              >
                 Pricing
-              </a>
-              <a href="#about" className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">
-                About
               </a>
             </div>
             <div className="flex items-center gap-3">
@@ -84,7 +94,7 @@ export default function LandingPage() {
                 </Button>
               </Link>
               <Link href="/signup">
-                <Button size="sm" className="bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 shadow-lg shadow-blue-500/25">
+                <Button size="sm" variant="default">
                   Get Started
                 </Button>
               </Link>
@@ -117,14 +127,18 @@ export default function LandingPage() {
               </span>
             </h1>
 
-            <p className="text-lg sm:text-xl text-slate-600 max-w-2xl mx-auto mb-10 leading-relaxed">
-              BoardMaster is a modern project management tool that helps teams organize,
-              track, and deliver projects with ease. Simple yet powerful.
+            <p className="text-lg sm:text-xl font-sofia text-slate-600 max-w-2xl mx-auto mb-10 leading-relaxed">
+              Nexora is a modern project management tool that helps teams
+              organize, track, and deliver projects with ease. Simple yet
+              powerful.
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link href="/signup">
-                <Button size="lg" className="bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 shadow-xl shadow-blue-500/25 gap-2 text-base px-8">
+                <Button
+                  size="lg"
+                  className="bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 shadow-xl shadow-blue-500/25 gap-2 text-base px-8"
+                >
                   Start Free
                   <ArrowRight className="h-5 w-5" />
                 </Button>
@@ -148,14 +162,32 @@ export default function LandingPage() {
             <div className="bg-white rounded-2xl shadow-2xl border border-slate-200 p-6 max-w-5xl mx-auto">
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 {[
-                  { title: 'To Do', tasks: ['Design homepage', 'Setup database', 'Create auth'], color: 'slate' },
-                  { title: 'In Progress', tasks: ['Build API endpoints', 'Implement login'], color: 'blue' },
-                  { title: 'Review', tasks: ['Code review PR #42'], color: 'amber' },
-                  { title: 'Done', tasks: ['Project setup', 'Deploy staging'], color: 'emerald' },
+                  {
+                    title: "To Do",
+                    tasks: ["Design homepage", "Setup database", "Create auth"],
+                    color: "slate",
+                  },
+                  {
+                    title: "In Progress",
+                    tasks: ["Build API endpoints", "Implement login"],
+                    color: "blue",
+                  },
+                  {
+                    title: "Review",
+                    tasks: ["Code review PR #42"],
+                    color: "amber",
+                  },
+                  {
+                    title: "Done",
+                    tasks: ["Project setup", "Deploy staging"],
+                    color: "emerald",
+                  },
                 ].map((column, i) => (
                   <div key={i} className="bg-slate-50 rounded-xl p-4">
                     <div className="flex items-center justify-between mb-3">
-                      <h3 className="font-semibold text-slate-700">{column.title}</h3>
+                      <h3 className="font-semibold text-slate-700">
+                        {column.title}
+                      </h3>
                       <span className="text-xs bg-slate-200 text-slate-600 px-2 py-1 rounded-full">
                         {column.tasks.length}
                       </span>
@@ -214,7 +246,8 @@ export default function LandingPage() {
               Everything you need to manage projects
             </h2>
             <p className="text-lg text-slate-600">
-              Powerful features designed to help your team work smarter, not harder.
+              Powerful features designed to help your team work smarter, not
+              harder.
             </p>
           </motion.div>
 
@@ -231,7 +264,9 @@ export default function LandingPage() {
                 <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center mb-4 shadow-lg shadow-blue-500/20">
                   <feature.icon className="h-6 w-6 text-white" />
                 </div>
-                <h3 className="font-semibold text-lg text-slate-900 mb-2">{feature.title}</h3>
+                <h3 className="font-semibold text-lg text-slate-900 mb-2">
+                  {feature.title}
+                </h3>
                 <p className="text-slate-600">{feature.description}</p>
               </motion.div>
             ))}
@@ -253,10 +288,14 @@ export default function LandingPage() {
               Ready to transform your workflow?
             </h2>
             <p className="text-lg text-slate-300 mb-8">
-              Join thousands of teams already using BoardMaster to deliver projects faster.
+              Join thousands of teams already using Nexora to deliver projects
+              faster.
             </p>
             <Link href="/signup">
-              <Button size="lg" className="bg-gradient-to-r from-blue-500 to-cyan-400 hover:from-blue-600 hover:to-cyan-500 shadow-xl shadow-blue-500/30 gap-2 text-base px-8">
+              <Button
+                size="lg"
+                className="bg-gradient-to-r from-blue-500 to-cyan-400 hover:from-blue-600 hover:to-cyan-500 shadow-xl shadow-blue-500/30 gap-2 text-base px-8"
+              >
                 Get Started Free
                 <ArrowRight className="h-5 w-5" />
               </Button>
@@ -269,19 +308,33 @@ export default function LandingPage() {
       <footer className="bg-white border-t border-slate-200">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-600 to-cyan-500 flex items-center justify-center">
-                <span className="text-white font-bold text-sm">B</span>
+            <div className="flex items-center gap-2 min-w-[215px]">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-600 to-cyan-500 flex items-center justify-center shadow-lg shadow-blue-500/20">
+                <span className="text-white font-bold text-base">N</span>
               </div>
-              <span className="font-semibold text-slate-900">BoardMaster</span>
+              <span className="font-semibold font-unbounded bg-gradient-to-br from-blue-600 to-cyan-500 text-lg bg-clip-text text-transparent">
+                Nexora
+              </span>
             </div>
             <div className="flex items-center gap-6 text-sm text-slate-600">
-              <a href="#" className="hover:text-slate-900 transition-colors">Privacy</a>
-              <a href="#" className="hover:text-slate-900 transition-colors">Terms</a>
-              <a href="#" className="hover:text-slate-900 transition-colors">Contact</a>
+              <a href="#" className="hover:text-slate-900 transition-colors">
+                Privacy
+              </a>
+              <a href="#" className="hover:text-slate-900 transition-colors">
+                Terms
+              </a>
+              <a href="#" className="hover:text-slate-900 transition-colors">
+                Contact
+              </a>
+              <a href="#" className="hover:text-slate-900 transition-colors">
+                FaQ
+              </a>
+              <a href="#" className="hover:text-slate-900 transition-colors">
+                Help Center
+              </a>
             </div>
             <p className="text-sm text-slate-500">
-              © 2024 BoardMaster. All rights reserved.
+              © 2026 Nexora. All rights reserved.
             </p>
           </div>
         </div>
