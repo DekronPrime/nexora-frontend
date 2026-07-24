@@ -27,7 +27,13 @@ function AppLayoutContent({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen bg-slate-50/50">
       <Header />
-      <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <main
+        className="container px-4 sm:px-6 lg:px-8 py-6 mx-auto bg-[url('/images/bg4.jpg')] 
+          bg-cover
+          bg-center
+          bg-no-repeat
+          min-h-[calc(100dvh-66px)]"
+      >
         {children}
       </main>
     </div>

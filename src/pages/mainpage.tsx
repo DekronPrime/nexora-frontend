@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { PricingPlan } from "../types";
-import { PricingCard } from "../components/ui/pricingcard";
+import { PricingCard } from "../components/ui/pricing-card";
 
 const features = [
   {
