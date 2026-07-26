@@ -11,20 +11,20 @@ export function PricingCard({ plan }: PricingCardProps) {
   return (
     <div
       className={`
-    relative flex h-full flex-col 
-    rounded-xl border
-    bg-background
-    px-6
-    py-8
-    transition-all duration-300
-    hover:-translate-y-2 hover:border-primary/40 hover:shadow-2xl
+        relative flex h-full flex-col 
+        rounded-xl border
+        bg-background
+        px-6
+        py-8
+        transition-all duration-300
+        hover:-translate-y-2 hover:border-primary/40 hover:shadow-2xl
 
-    ${
-      plan.featured
-        ? "scale-105 border-[3px] border-primary shadow-primary/20 shadow-2xl"
-        : "border-border"
-    }
-  `}
+        ${
+          plan.featured
+            ? "scale-105 border-[3px] border-primary shadow-primary/20 shadow-2xl"
+            : "border-border"
+        }
+      `}
     >
       {plan.badge && (
         <div className="absolute -top-4 left-0 right-0 flex items-center justify-center">

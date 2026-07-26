@@ -185,16 +185,23 @@ export function Header() {
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem>
-                <User className="mr-2 h-4 w-4" />
-                <Link href="/settings/profile">Profile</Link>
+                <User className="mr-2 h-5 w-5" />
+                <Link href="/settings/profile" className="w-full">
+                  Profile
+                </Link>
               </DropdownMenuItem>
               <DropdownMenuItem>
-                <Settings className="mr-2 h-4 w-4" />
-                <Link href="/settings">Settings</Link>
+                <Settings className="mr-2 h-5 w-5" />
+                <Link href="/settings" className="w-full">
+                  Settings
+                </Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={logout} className="text-destructive">
-                <LogOut className="mr-2 h-4 w-4" />
+              <DropdownMenuItem
+                onClick={logout}
+                className="text-destructive hover:cursor-pointer"
+              >
+                <LogOut className="mr-2 h-5 w-5" />
                 Log out
               </DropdownMenuItem>
             </DropdownMenuContent>

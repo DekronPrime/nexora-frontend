@@ -1,10 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
+import { Button } from "@/src/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -13,14 +9,31 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/src/components/ui/dialog";
-import { Button } from "@/src/components/ui/button";
 import { Input } from "@/src/components/ui/input";
 import { Label } from "@/src/components/ui/label";
 import { Textarea } from "@/src/components/ui/textarea";
 import { useProjects } from "@/src/hooks";
-import { toast } from "sonner";
-import { Loader2, Check } from "lucide-react";
 import { cn } from "@/src/lib/utils";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  Briefcase,
+  Check,
+  Code,
+  Folder,
+  GitBranch,
+  Globe,
+  Home,
+  Layers,
+  Loader2,
+  Rocket,
+  Star,
+  Zap,
+} from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
 
 const colorPresets = [
   "#3B82F6",
@@ -35,18 +48,29 @@ const colorPresets = [
   "#6366F1",
 ];
 
-const iconPresets = [
-  "folder",
-  "briefcase",
-  "code",
-  "globe",
-  "home",
-  "layers",
-  "rocket",
-  "star",
-  "zap",
-  "git-branch",
+export const iconPresets = [
+  { id: "Folder", component: Folder },
+  { id: "Briefcase", component: Briefcase },
+  { id: "Code", component: Code },
+  { id: "Globe", component: Globe },
+  { id: "Home", component: Home },
+  { id: "Layers", component: Layers },
+  { id: "Rocket", component: Rocket },
+  { id: "Star", component: Star },
+  { id: "Zap", component: Zap },
+  { id: "GitBranch", component: GitBranch },
 ];
+
+export const iconMap = iconPresets.reduce(
+  (acc, curr) => {
+    acc[curr.id] = curr.component;
+    return acc;
+  },
+  {} as Record<
+    string,
+    React.ComponentType<{ className?: string; style?: React.CSSProperties }>
+  >,
+);
 
 const createProjectSchema = z.object({
   title: z
@@ -87,7 +111,7 @@ export function CreateProjectModal({
     resolver: zodResolver(createProjectSchema),
     defaultValues: {
       color: colorPresets[0],
-      icon: iconPresets[0],
+      icon: iconPresets[0].id,
     },
   });
 
@@ -184,21 +208,40 @@ export function CreateProjectModal({
           <div className="space-y-2">
             <Label>Icon</Label>
             <div className="flex flex-wrap gap-2">
-              {iconPresets.map((icon) => (
+              {/* {iconPresets.map((icon) => (
                 <button
-                  key={icon}
+                  key={icon.id}
                   type="button"
-                  onClick={() => setValue("icon", icon)}
+                  onClick={() => setValue("icon", icon.id)}
                   className={cn(
                     "w-10 h-10 rounded-lg border-2 flex items-center justify-center transition-all capitalize text-sm",
-                    selectedIcon === icon
+                    selectedIcon === icon.id
                       ? "border-blue-500 bg-blue-50 text-blue-600"
                       : "border-slate-200 hover:border-slate-300 text-slate-600",
                   )}
                 >
-                  {icon.replace("-", " ")}
+                  {icon.component}
                 </button>
-              ))}
+              ))} */}
+              {iconPresets.map((icon) => {
+                const IconComponent = icon.component; // Отримуємо компонент
+                return (
+                  <button
+                    key={icon.id}
+                    type="button"
+                    onClick={() => setValue("icon", icon.id)}
+                    className={cn(
+                      "w-10 h-10 rounded-lg border-2 flex items-center justify-center transition-all",
+                      selectedIcon === icon.id
+                        ? "border-blue-500 bg-blue-50 text-blue-600"
+                        : "border-slate-200 hover:border-slate-300 text-slate-600",
+                    )}
+                  >
+                    {/* Рендеримо саму іконку, а не текст */}
+                    <IconComponent className="h-5 w-5" />
+                  </button>
+                );
+              })}
             </div>
             {errors.icon && (
               <p className="text-sm text-destructive">{errors.icon.message}</p>
