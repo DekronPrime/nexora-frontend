@@ -2,7 +2,7 @@
 
 import { KanbanBoard } from "@/src/components/kanban";
 import { InviteMemberModal } from "@/src/components/modals";
-import { AddTaskModal } from "@/src/components/modals/add-task-modal";
+import { TaskModal } from "@/src/components/modals/task-modal";
 import { ErrorState, LoadingState } from "@/src/components/states";
 import {
   Avatar,
@@ -59,23 +59,75 @@ const statusLabels: Record<TaskStatus, string> = {
 
 const formatActivityMessage = (activity: ActivityLog) => {
   const actor = activity.user?.fullName || "Someone";
-  const entity = activity.entityType || "item";
 
-  switch (activity.action.toLowerCase()) {
-    case "created":
-      return `${actor} created ${entity}`;
-    case "updated":
-      return `${actor} updated ${entity}`;
-    case "deleted":
-      return `${actor} deleted ${entity}`;
-    case "completed":
-      return `${actor} completed ${entity}`;
-    case "moved":
-      return `${actor} moved ${entity}`;
-    case "assigned":
-      return `${actor} assigned ${entity}`;
+  switch (activity.action) {
+    case "project_created":
+      return `${actor} created the project "${activity.newValue?.title ?? "Untitled"}".`;
+
+    case "project_deleted":
+      return `${actor} deleted the project "${activity.oldValue?.title ?? "Untitled"}".`;
+
+    case "project_updated": {
+      const oldValue = activity.oldValue ?? {};
+      const newValue = activity.newValue ?? {};
+
+      if (oldValue.title !== newValue.title) {
+        return `${actor} renamed the project from "${oldValue.title}" to "${newValue.title}".`;
+      }
+      if (oldValue.description !== newValue.description) {
+        return `${actor} updated the project description.`;
+      }
+
+      return `${actor} updated the project.`;
+    }
+
+    case "task_created":
+      return `${actor} created the task "${activity.newValue?.title ?? "Untitled"}".`;
+
+    case "task_deleted":
+      return `${actor} deleted the task "${activity.oldValue?.title ?? "Untitled"}".`;
+
+    case "task_updated": {
+      const oldValue = (activity.oldValue ?? {}) as {
+        status?: string;
+        priority?: string;
+        title?: string;
+        assigneeId?: string | null;
+      };
+      const newValue = (activity.newValue ?? {}) as {
+        status?: string;
+        priority?: string;
+        title?: string;
+        assigneeId?: string | null;
+      };
+
+      if (oldValue.status !== newValue.status) {
+        return `${actor} moved "${newValue.title}" from ${oldValue.status?.toUpperCase() ?? ""} to ${newValue.status?.toUpperCase() ?? ""}.`;
+      }
+      if (oldValue.priority !== newValue.priority) {
+        return `${actor} changed priority of "${newValue.title}" from ${oldValue.priority?.toUpperCase() ?? ""} to ${newValue.priority?.toUpperCase() ?? ""}.`;
+      }
+      if (oldValue.title !== newValue.title) {
+        return `${actor} renamed task "${oldValue.title}" to "${newValue.title}".`;
+      }
+      if (oldValue.assigneeId !== newValue.assigneeId) {
+        return `${actor} reassigned "${newValue.title}".`;
+      }
+
+      return `${actor} updated the task "${newValue.title}".`;
+    }
+
+    case "member_invited":
+      return `${actor} invited a new member to the project.`;
+
+    case "member_removed":
+      return `${actor} removed a member from the project.`;
+
+    case "member_role_updated":
+      return `${actor} changed a member's role.`;
+
     default:
-      return `${actor} ${activity.action} ${entity}`;
+      return `${actor} performed "${activity.action}".`;
   }
 };
 
@@ -101,7 +153,8 @@ export const ProjectPage = () => {
   const membersList = Array.isArray(members) ? members : [];
   const ProjectIcon = project ? iconMap[project.icon] || Folder : Folder;
 
-  const [addTaskModalOpen, setAddTaskModalOpen] = useState(false);
+  const [taskModalOpen, setTaskModalOpen] = useState(false);
+  const [selectedTask, setSelectedTask] = useState<Task | undefined>(undefined);
   const [inviteModalOpen, setInviteModalOpen] = useState(false);
   const [defaultStatus, setDefaultStatus] = useState<TaskStatus>("todo");
   const [activityLogs, setActivityLogs] = useState<ActivityLog[]>([]);
@@ -164,12 +217,14 @@ export const ProjectPage = () => {
   };
 
   const handleAddTask = (status: TaskStatus) => {
+    setSelectedTask(undefined);
     setDefaultStatus(status);
-    setAddTaskModalOpen(true);
+    setTaskModalOpen(true);
   };
 
   const handleTaskClick = (task: Task) => {
-    // Task detail view will be added in future
+    setSelectedTask(task);
+    setTaskModalOpen(true);
   };
 
   if (projectLoading) {
@@ -535,11 +590,12 @@ export const ProjectPage = () => {
         </div>
       </Tabs>
 
-      <AddTaskModal
-        open={addTaskModalOpen}
-        onOpenChange={setAddTaskModalOpen}
-        projectId={projectId}
+      <TaskModal
+        open={taskModalOpen}
+        onOpenChange={setTaskModalOpen}
+        projectId={project.id}
         defaultStatus={defaultStatus}
+        task={selectedTask}
       />
       <InviteMemberModal
         open={inviteModalOpen}

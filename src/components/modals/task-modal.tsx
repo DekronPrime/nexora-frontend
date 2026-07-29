@@ -1,9 +1,12 @@
 "use client";
 
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/src/components/ui/avatar";
+import { Button } from "@/src/components/ui/button";
+import { Calendar } from "@/src/components/ui/calendar";
 import {
   Dialog,
   DialogContent,
@@ -12,10 +15,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/src/components/ui/dialog";
-import { Button } from "@/src/components/ui/button";
 import { Input } from "@/src/components/ui/input";
 import { Label } from "@/src/components/ui/label";
-import { Textarea } from "@/src/components/ui/textarea";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/src/components/ui/popover";
 import {
   Select,
   SelectContent,
@@ -23,25 +29,26 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/src/components/ui/select";
-import { Calendar } from "@/src/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/src/components/ui/popover";
+import { Textarea } from "@/src/components/ui/textarea";
 import { useMembers, useTasks } from "@/src/hooks";
-import { TaskStatus, TaskPriority, ProjectMember } from "@/src/types";
-import { toast } from "sonner";
 import { cn } from "@/src/lib/utils";
-import { format } from "date-fns";
-import { Loader2, CalendarIcon } from "lucide-react";
 import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/src/components/ui/avatar";
+  CreateTaskDto,
+  ProjectMember,
+  Task,
+  TaskPriority,
+  TaskStatus,
+  UpdateTaskDto,
+} from "@/src/types";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { format } from "date-fns";
+import { CalendarIcon, Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
 
-const addTaskSchema = z.object({
+const taskSchema = z.object({
   title: z.string().min(1, "Title is required").max(100),
   description: z.string().max(3000).optional(),
   status: z.enum(["todo", "in_progress", "review", "done"] as const),
@@ -50,25 +57,36 @@ const addTaskSchema = z.object({
   dueDate: z.date().nullable().optional(),
 });
 
-type AddTaskFormData = z.infer<typeof addTaskSchema>;
+type TaskFormData = z.infer<typeof taskSchema>;
 
-interface AddTaskModalProps {
+interface TaskModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   projectId: string;
+  task?: Task;
   defaultStatus?: TaskStatus;
 }
 
-export function AddTaskModal({
+export function TaskModal({
   open,
   onOpenChange,
   projectId,
+  task,
   defaultStatus = "todo",
-}: AddTaskModalProps) {
+}: TaskModalProps) {
+  const getDefaultValues = (): TaskFormData => ({
+    title: task?.title ?? "",
+    description: task?.description ?? "",
+    status: task?.status ?? defaultStatus,
+    priority: task?.priority ?? "medium",
+    assigneeId: task?.assigneeId ?? null,
+    dueDate: task?.dueDate ? new Date(task.dueDate) : null,
+  });
+
   const [isLoading, setIsLoading] = useState(false);
   const { members = [] } = useMembers(projectId);
-  const { createTask } = useTasks({ projectId });
-
+  const { createTask, updateTask } = useTasks({ projectId });
+  const isEditing = !!task;
   const {
     register,
     handleSubmit,
@@ -76,48 +94,46 @@ export function AddTaskModal({
     watch,
     reset,
     formState: { errors },
-  } = useForm<AddTaskFormData>({
-    resolver: zodResolver(addTaskSchema),
-    defaultValues: {
-      status: defaultStatus,
-      priority: "medium",
-      assigneeId: null,
-      dueDate: null,
-    },
+  } = useForm<TaskFormData>({
+    resolver: zodResolver(taskSchema),
+    defaultValues: getDefaultValues(),
   });
+
+  useEffect(() => {
+    if (!open) return;
+    reset(getDefaultValues());
+  }, [task, open, defaultStatus, reset]);
 
   const selectedAssignee = watch("assigneeId");
   const selectedPriority = watch("priority");
   const selectedStatus = watch("status");
   const selectedDueDate = watch("dueDate");
 
-  const onSubmit = async (data: AddTaskFormData) => {
+  const onSubmit = async (data: TaskFormData) => {
     setIsLoading(true);
     try {
-      const taskPayload: any = {
-        projectId,
+      const baseTaskPayload = {
         title: data.title,
         description: data.description || "",
         status: data.status,
         priority: data.priority,
+        ...(data.assigneeId ? { assigneeId: data.assigneeId } : {}),
+        ...(data.dueDate ? { dueDate: data.dueDate.toISOString() } : {}),
       };
 
-      // Only include assigneeId if it's set
-      if (data.assigneeId) {
-        taskPayload.assigneeId = data.assigneeId;
+      if (isEditing) {
+        await updateTask(task.id, baseTaskPayload as UpdateTaskDto);
+      } else {
+        const createTaskPayload: CreateTaskDto = {
+          projectId,
+          ...baseTaskPayload,
+        };
+        await createTask(createTaskPayload);
       }
 
-      // Only include dueDate if it's set
-      if (data.dueDate) {
-        taskPayload.dueDate = data.dueDate.toISOString();
-      }
-
-      console.log("Creating task with data:", taskPayload);
-
-      const result = await createTask(taskPayload);
-
-      console.log("Task created successfully:", result);
-      toast.success("Task created successfully");
+      toast.success(
+        isEditing ? "Task updated successfully" : "Task created successfully",
+      );
       onOpenChange(false);
       reset();
     } catch (error) {
@@ -137,13 +153,17 @@ export function AddTaskModal({
     onOpenChange(isOpen);
   };
 
+  const submitLabel = isEditing ? "Save changes" : "Create task";
+
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>Add new task</DialogTitle>
+          <DialogTitle>{isEditing ? "Edit task" : "Add new task"}</DialogTitle>
           <DialogDescription>
-            Create a new task for your project.
+            {isEditing
+              ? "Update the task details."
+              : "Create a new task for your project."}
           </DialogDescription>
         </DialogHeader>
 
@@ -289,10 +309,10 @@ export function AddTaskModal({
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Creating...
+                  {isEditing ? "Saving..." : "Creating..."}
                 </>
               ) : (
-                "Create task"
+                submitLabel
               )}
             </Button>
           </DialogFooter>
