@@ -11,18 +11,25 @@ import {
 import { Calendar, GripVertical } from "lucide-react";
 import { format } from "date-fns";
 
-const priorityColors: Record<TaskPriority, string> = {
-  low: "text-slate-500 bg-slate-100",
-  medium: "text-amber-600 bg-amber-100",
+export const priorityColors: Record<TaskPriority, string> = {
+  low: "text-green-500 bg-green-100",
+  medium: "text-yellow-600 bg-yellow-100",
   high: "text-orange-600 bg-orange-100",
-  urgent: "text-red-600 bg-red-100",
+  urgent: "text-rose-600 bg-rose-100",
 };
 
-const priorityLabels: Record<TaskPriority, string> = {
+export const priorityLabels: Record<TaskPriority, string> = {
   low: "Low",
   medium: "Medium",
   high: "High",
   urgent: "Urgent",
+};
+
+export const priorityBorderColors: Record<TaskPriority, string> = {
+  low: "border-l-green-400",
+  medium: "border-l-yellow-400",
+  high: "border-l-orange-500",
+  urgent: "border-l-rose-700",
 };
 
 interface TaskCardProps {
@@ -39,7 +46,7 @@ export function TaskCard({ task, onClick, isDragging }: TaskCardProps) {
 
   const style = transform
     ? {
-        transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
+        opacity: isDragging ? 0 : 1,
       }
     : undefined;
 
@@ -56,8 +63,9 @@ export function TaskCard({ task, onClick, isDragging }: TaskCardProps) {
       ref={setNodeRef}
       style={style}
       className={cn(
-        "bg-white rounded-lg border border-slate-200 p-3 shadow-sm cursor-pointer",
-        "hover:shadow-md hover:border-slate-300 transition-all",
+        "bg-white rounded-r-lg border border-l-4 border-slate-200 bg- p-3 shadow-sm cursor-pointer",
+        priorityBorderColors[task.priority],
+        "hover:shadow-md hover:border-slate-300 hover:border-l-slate-700 transition-all",
         isDragging && "shadow-xl ring-2 ring-blue-500",
         task.completedAt && "opacity-60",
       )}
@@ -84,14 +92,14 @@ export function TaskCard({ task, onClick, isDragging }: TaskCardProps) {
           </div>
           <h4
             className={cn(
-              "font-medium text-slate-900 text-sm line-clamp-2",
+              "font-bold font-inter text-slate-900 text-sm line-clamp-2",
               task.completedAt && "line-through text-slate-500",
             )}
           >
             {task.title}
           </h4>
           {task.description && (
-            <p className="text-xs text-slate-500 line-clamp-2 mt-1">
+            <p className="text-xs font-semibold font-sofia text-slate-500 line-clamp-2 mt-1">
               {task.description}
             </p>
           )}

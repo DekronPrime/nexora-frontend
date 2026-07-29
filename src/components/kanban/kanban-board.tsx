@@ -1,35 +1,41 @@
 "use client";
 
-import { useMemo } from "react";
 import {
+  KanbanColumn as KanbanColumnType,
+  Task,
+  TaskStatus,
+} from "@/src/types";
+import {
+  closestCorners,
   DndContext,
   DragEndEvent,
+  DragOverEvent,
   DragOverlay,
   DragStartEvent,
-  DragOverEvent,
   PointerSensor,
   useSensor,
   useSensors,
-  closestCorners,
 } from "@dnd-kit/core";
-import { useState } from "react";
-import {
-  Task,
-  TaskStatus,
-  KanbanColumn as KanbanColumnType,
-} from "@/src/types";
+import { CheckCheck, Flame, LayoutList, SquarePen } from "lucide-react";
+import { useMemo, useState } from "react";
 import { KanbanColumn } from "./kanban-column";
 import { TaskCard } from "./task-card";
 
 const columnConfig: Array<{
   id: TaskStatus;
   title: string;
+  icon: React.ComponentType;
   color: string;
 }> = [
-  { id: "todo", title: "To Do", color: "#64748B" },
-  { id: "in_progress", title: "In Progress", color: "#3B82F6" },
-  { id: "review", title: "Review", color: "#F59E0B" },
-  { id: "done", title: "Done", color: "#10B981" },
+  { id: "todo", title: "To Do", icon: LayoutList, color: "text-slate-500" },
+  {
+    id: "in_progress",
+    title: "In Progress",
+    icon: Flame,
+    color: "text-amber-500",
+  },
+  { id: "review", title: "Review", icon: SquarePen, color: "text-violet-500" },
+  { id: "done", title: "Done", icon: CheckCheck, color: "text-emerald-500" },
 ];
 
 interface KanbanBoardProps {
@@ -99,7 +105,7 @@ export function KanbanBoard({
       onDragEnd={handleDragEnd}
       onDragOver={handleDragOver}
     >
-      <div className="flex gap-4 overflow-x-auto pb-4 -mx-4 px-4">
+      <div className="flex justify-evenly flex-wrap lg:flex-nowrap gap-4 lg:overflow-x-auto">
         {columns.map((column) => (
           <KanbanColumn
             key={column.id}
@@ -113,7 +119,12 @@ export function KanbanBoard({
 
       <DragOverlay>
         {activeTask ? (
-          <div className="rotate-3 opacity-90">
+          <div
+            className="bg-white
+        scale-105
+        shadow-2xl
+        cursor-grabbing"
+          >
             <TaskCard task={activeTask} isDragging />
           </div>
         ) : null}

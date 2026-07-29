@@ -3,17 +3,11 @@ import { motion } from "framer-motion";
 import { Clock, Folder, Settings } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { type ElementType } from "react";
+import { iconMap } from "../modals/create-project-modal";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Button } from "../ui/button";
 import { Card, CardContent } from "../ui/card";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
-import { iconMap } from "../modals/create-project-modal";
+import { DropdownMenu, DropdownMenuTrigger } from "../ui/dropdown-menu";
 
 type ProjectCardProps = {
   project: Project;
@@ -30,7 +24,7 @@ export const ProjectCard = ({ project }: ProjectCardProps) => {
       transition={{ duration: 0.2 }}
     >
       <Link href={`/projects/${project.id}`}>
-        <Card className="group border-none h-full cursor-pointer hover:shadow-lg hover:border-blue-200 transition-all duration-200 overflow-hidden">
+        <Card className="group rounded-lg border-none h-full cursor-pointer hover:shadow-lg hover:border-blue-200 transition-all duration-200 overflow-hidden">
           <div className="h-2" style={{ backgroundColor: project.color }} />
           <CardContent className="flex h-full flex-col justify-between p-5 gap-3">
             <div className="flex items-start justify-between">
@@ -69,21 +63,8 @@ export const ProjectCard = ({ project }: ProjectCardProps) => {
                     </Link>
                   </Button>
                 </DropdownMenuTrigger>
-                {/* <DropdownMenuContent align="end">
-                  <DropdownMenuItem>
-                    <Link href={`/projects/${project.id}`} className="w-full">
-                      View Project
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    
-                      Settings
-                    </Link>
-                  </DropdownMenuItem>
-                </DropdownMenuContent> */}
               </DropdownMenu>
             </div>
-
             {project.description ? (
               <p className="text-sm min-h-[40px] font-sofia text-slate-600 line-clamp-2 align-top">
                 {project.description}
@@ -93,7 +74,6 @@ export const ProjectCard = ({ project }: ProjectCardProps) => {
                 No description provided.
               </p>
             )}
-
             <div className="flex items-center justify-between">
               <div className="flex -space-x-2">
                 {project.owner && (
@@ -117,7 +97,6 @@ export const ProjectCard = ({ project }: ProjectCardProps) => {
                   </div>
                 )}
               </div>
-
               <div className="flex items-center gap-2 text-xs text-slate-500">
                 <Clock className="h-3.5 w-3.5" />
                 <span>{new Date(project.createdAt).toLocaleDateString()}</span>

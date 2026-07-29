@@ -193,6 +193,7 @@ export interface KanbanColumn {
   title: string;
   tasks: Task[];
   color: string;
+  icon: React.ComponentType;
 }
 
 export interface PricingPlan {
