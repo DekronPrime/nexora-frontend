@@ -1,15 +1,15 @@
 "use client";
 
-import { useDraggable } from "@dnd-kit/core";
-import { Task, TaskPriority } from "@/src/types";
-import { cn } from "@/src/lib/utils";
 import {
   Avatar,
   AvatarFallback,
   AvatarImage,
 } from "@/src/components/ui/avatar";
-import { Calendar, GripVertical } from "lucide-react";
+import { cn } from "@/src/lib/utils";
+import { Task, TaskPriority } from "@/src/types";
+import { useDraggable } from "@dnd-kit/core";
 import { format } from "date-fns";
+import { Calendar, GripVertical } from "lucide-react";
 
 export const priorityColors: Record<TaskPriority, string> = {
   low: "text-green-500 bg-green-100",
@@ -63,7 +63,7 @@ export function TaskCard({ task, onClick, isDragging }: TaskCardProps) {
       ref={setNodeRef}
       style={style}
       className={cn(
-        "bg-white rounded-r-lg border border-l-4 border-slate-200 bg- p-3 shadow-sm cursor-pointer",
+        "bg-white rounded-r-lg border border-l-4 border-slate-200 p-3 shadow-sm cursor-pointer",
         priorityBorderColors[task.priority],
         "hover:shadow-md hover:border-slate-300 hover:border-l-slate-700 transition-all",
         isDragging && "shadow-xl ring-2 ring-blue-500",
