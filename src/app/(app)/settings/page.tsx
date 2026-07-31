@@ -27,10 +27,14 @@ import {
   TabsTrigger,
 } from "@/src/components/ui/tabs";
 import { Switch } from "@/src/components/ui/switch";
+import { ChangePasswordModal } from "@/src/components/modals/change-password-modal";
+import { ChangePasswordDto } from "@/src/types";
+import { userService } from "@/src/lib/services/user.service";
 
 export default function SettingsPage() {
   const { user, updateProfile } = useAuth();
   const [isSaving, setIsSaving] = useState(false);
+  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
 
   if (!user) return null;
 
@@ -51,6 +55,10 @@ export default function SettingsPage() {
     } finally {
       setIsSaving(false);
     }
+  };
+
+  const handleChangePassword = async (data: ChangePasswordDto) => {
+    await userService.update(data);
   };
 
   return (
@@ -207,7 +215,12 @@ export default function SettingsPage() {
                 <p className="text-sm text-slate-500 mb-4">
                   Change your password to keep your account secure
                 </p>
-                <Button variant="outline">Change password</Button>
+                <Button
+                  variant="outline"
+                  onClick={() => setIsPasswordModalOpen(true)}
+                >
+                  Change password
+                </Button>
               </div>
               <Separator />
               <div>
@@ -263,6 +276,11 @@ export default function SettingsPage() {
           </Card>
         </TabsContent>
       </Tabs>
+      <ChangePasswordModal
+        open={isPasswordModalOpen}
+        onOpenChange={setIsPasswordModalOpen}
+        changePassword={handleChangePassword}
+      />
     </div>
   );
 }
