@@ -9,6 +9,11 @@ export interface User {
   updatedAt: string;
 }
 
+export interface ChangePasswordDto {
+  currentPassword: string;
+  newPassword: string;
+}
+
 // Project Types
 export interface Project {
   id: string;
