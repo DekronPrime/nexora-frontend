@@ -35,6 +35,10 @@ export default function SettingsPage() {
   const { user, updateProfile } = useAuth();
   const [isSaving, setIsSaving] = useState(false);
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
+  const [fullName, setFullName] = useState(user?.fullName ?? "");
+  const [avatarUrl, setAvatarUrl] = useState<string | undefined>(
+    user?.avatarUrl ?? undefined,
+  );
 
   if (!user) return null;
 
@@ -48,7 +52,15 @@ export default function SettingsPage() {
     e.preventDefault();
     setIsSaving(true);
     try {
-      // Profile update logic would go here
+      console.log(avatarUrl);
+      const updatedUser = await userService.update({
+        fullName,
+        avatarUrl,
+      });
+      updateProfile?.({
+        fullName: updatedUser.fullName,
+        avatarUrl: updatedUser.avatarUrl ?? undefined,
+      });
       toast.success("Profile updated successfully");
     } catch {
       toast.error("Failed to update profile");
@@ -58,7 +70,7 @@ export default function SettingsPage() {
   };
 
   const handleChangePassword = async (data: ChangePasswordDto) => {
-    await userService.update(data);
+    await userService.changePassword(data);
   };
 
   return (
@@ -116,9 +128,27 @@ export default function SettingsPage() {
                 <Separator />
 
                 <div className="grid gap-4 sm:grid-cols-2">
-                  <div className="space-y-2">
+                  {/* <div className="space-y-2">
                     <Label htmlFor="fullName">Full name</Label>
                     <Input id="fullName" defaultValue={user.fullName} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="email">Email</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      defaultValue={user.email}
+                      disabled
+                    />
+                  </div> */}
+
+                  <div className="space-y-2">
+                    <Label htmlFor="fullName">Full name</Label>
+                    <Input
+                      id="fullName"
+                      value={fullName}
+                      onChange={(e) => setFullName(e.target.value)}
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="email">Email</Label>
