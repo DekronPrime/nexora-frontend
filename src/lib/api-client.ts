@@ -51,7 +51,8 @@ class ApiClient {
       headers,
     });
 
-    const data = await response.json();
+    const text = await response.text();
+    const data = text ? JSON.parse(text) : undefined;
 
     if (!response.ok) {
       const error: ApiError = data;
