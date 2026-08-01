@@ -56,7 +56,7 @@ export const DashboardPage = () => {
         </div>
 
         <Button onClick={handleCreateProject} className="gap-2">
-          <Plus className="h-4 w-4" />
+          <Plus className="h-5 w-5" />
           New Project
         </Button>
       </div>

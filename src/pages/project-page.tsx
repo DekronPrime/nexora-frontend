@@ -43,14 +43,14 @@ import { toast } from "sonner";
 import { priorityColors, priorityLabels } from "../components/kanban/task-card";
 import { iconMap } from "../components/modals/create-project-modal";
 
-const statusColors: Record<TaskStatus, string> = {
+export const statusColors: Record<TaskStatus, string> = {
   todo: "bg-slate-200 text-slate-700",
   in_progress: "bg-amber-100 text-amber-700",
   review: "bg-violet-100 text-violet-700",
   done: "bg-emerald-100 text-emerald-700",
 };
 
-const statusLabels: Record<TaskStatus, string> = {
+export const statusLabels: Record<TaskStatus, string> = {
   todo: "To Do",
   in_progress: "In Progress",
   review: "Review",
@@ -285,7 +285,7 @@ export const ProjectPage = () => {
                   ) : (
                     <Calendar className="h-5 w-5" />
                   )}
-                  <span className="">
+                  <span>
                     Created {format(new Date(project.createdAt), "MMM d, yyyy")}
                   </span>
                   <span className="text-slate-600">•</span>
@@ -432,13 +432,13 @@ export const ProjectPage = () => {
                         )}
                         <div className="min-w-0 flex-1">
                           <div className="flex gap-2">
-                            <h4 className="font-bold text-base font-inter text-slate-900 truncate">
+                            <h4 className="font-bold font-inter text-base text-slate-900 truncate">
                               {task.title}
                             </h4>
                             <div className="text-sm flex gap-2 text-slate-500 capitalize mb-1">
                               <span
                                 className={cn(
-                                  "text-xs font-medium px-1.5 py-0.5 rounded",
+                                  "text-xs font-medium px-2 py-0.5 rounded",
                                   priorityColors[task.priority],
                                 )}
                               >
@@ -447,14 +447,14 @@ export const ProjectPage = () => {
                             </div>
                           </div>
                           {task.description && (
-                            <p className="text-xs font-semibold font-sofia text-slate-500 line-clamp-2">
+                            <p className="text-sm font-semibold font-sofia text-slate-500 line-clamp-2">
                               {task.description}
                             </p>
                           )}
                         </div>
                         <span
                           className={cn(
-                            "ml-3 text-xs font-medium px-2 py-1 rounded-full whitespace-nowrap",
+                            "text-sm font-medium px-3 py-1 rounded-full whitespace-nowrap",
                             statusColors[task.status],
                           )}
                         >
@@ -576,7 +576,7 @@ export const ProjectPage = () => {
                           variant={
                             member.role === "owner" ? "default" : "secondary"
                           }
-                          className="capitalize pb-0.5"
+                          className="text-sm font-medium px-3 pb-1 rounded-full whitespace-nowrap capitalize"
                         >
                           {member.role}
                         </Badge>
