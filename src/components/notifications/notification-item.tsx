@@ -35,9 +35,13 @@ export function NotificationItem({
     <button
       onClick={handleClick}
       className={cn(
-        "w-full text-left flex items-start gap-3 p-4 hover:bg-muted/50 transition-colors",
-        !notification.isRead && "bg-primary/5",
-        compact && "p-3",
+        "relative w-full text-left flex items-start gap-3 p-3 hover:bg-muted transition-all border border-l-4   border-slate-200",
+        !notification.isRead
+          ? "bg-white border-l-primary"
+          : "bg-muted border-l-slate-400",
+        compact
+          ? "p-3 border-l-0"
+          : "hover:shadow-md last:rounded-b-lg last:border-b-none",
       )}
     >
       <div
@@ -48,7 +52,7 @@ export function NotificationItem({
       >
         <Icon
           className={cn(
-            "h-4 w-4",
+            compact ? "w-4 h-4" : "w-6 h-6",
             notification.isRead ? "text-muted-foreground" : "text-primary",
           )}
         />
@@ -56,17 +60,23 @@ export function NotificationItem({
       <div className="flex-1 min-w-0">
         <p
           className={cn(
-            "text-sm font-medium truncate",
+            "text-sm font-semibold font-inter truncate",
             !notification.isRead && "text-foreground",
+            compact ? "font-semibold text-sm" : "font-bold text-lg",
           )}
         >
           {notification.title}
         </p>
-        <p className="text-xs text-muted-foreground line-clamp-2">
+        <p
+          className={cn(
+            "font-sofia text-muted-foreground line-clamp-2",
+            compact ? "font-medium text-xs" : "font-semibold text-sm",
+          )}
+        >
           {notification.message}
         </p>
         {!compact && (
-          <p className="text-xs text-muted-foreground mt-1">
+          <p className="text-xs italic font-inter font-semibold text-muted-foreground float-right">
             {formatDistanceToNow(new Date(notification.createdAt), {
               addSuffix: true,
             })}
@@ -74,7 +84,7 @@ export function NotificationItem({
         )}
       </div>
       {!notification.isRead && (
-        <div className="flex-shrink-0 w-2 h-2 rounded-full bg-primary" />
+        <div className="absolute top-3 right-3 flex-shrink-0 w-2 h-2 rounded-full bg-primary" />
       )}
     </button>
   );
