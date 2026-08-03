@@ -120,16 +120,16 @@ export function Header() {
             </PopoverTrigger>
             <PopoverContent className="w-96 p-0" align="end">
               <div className="p-4 border-b">
-                <h4 className="font-semibold">Notifications</h4>
+                <h4 className="font-bold font-inter">Notifications</h4>
                 {unreadCount > 0 && (
-                  <p className="text-xs text-muted-foreground mt-1">
+                  <p className="text-xs font-sofia font-semibold text-muted-foreground mt-1">
                     {unreadCount} unread
                   </p>
                 )}
               </div>
               <div className="max-h-80 overflow-y-auto">
                 {notificationsList.length === 0 ? (
-                  <div className="p-4 text-center text-sm text-muted-foreground">
+                  <div className="p-4 text-center text-sm font-sofia text-muted-foreground">
                     No notifications
                   </div>
                 ) : (
@@ -143,9 +143,13 @@ export function Header() {
                     ))
                 )}
               </div>
-              <div className="p-2 border-t">
+              <div className="border-t">
                 <Link href="/notifications">
-                  <Button variant="ghost" size="sm" className="w-full">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full border-none"
+                  >
                     View all notifications
                   </Button>
                 </Link>
