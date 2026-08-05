@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { Clock, Folder, Settings } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { iconMap } from "../modals/create-project-modal";
+import { iconMap } from "../modals/project-modal";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Button } from "../ui/button";
 import { Card, CardContent } from "../ui/card";
@@ -11,11 +11,18 @@ import { DropdownMenu, DropdownMenuTrigger } from "../ui/dropdown-menu";
 
 type ProjectCardProps = {
   project: Project;
+  onEdit: (project: Project) => void;
 };
 
-export const ProjectCard = ({ project }: ProjectCardProps) => {
+export const ProjectCard = ({ project, onEdit }: ProjectCardProps) => {
   const router = useRouter();
   const ProjectIcon = iconMap[project.icon] || Folder;
+
+  const handleEditProject = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onEdit(project);
+  };
 
   return (
     <motion.div
@@ -53,14 +60,9 @@ export const ProjectCard = ({ project }: ProjectCardProps) => {
                     variant="ghost"
                     size="icon"
                     className="opacity-0 group-hover:opacity-100 transition-all border-muted group/btn"
-                    onClick={(e) => e.stopPropagation()}
+                    onClick={handleEditProject}
                   >
-                    <Link
-                      href={`/projects/${project.id}/settings`}
-                      className=" text-center"
-                    >
-                      <Settings className="h-4 w-4 text-slate-400 group-hover/btn:text-accent-foreground transition-all" />
-                    </Link>
+                    <Settings className="h-4 w-4 text-slate-400 group-hover/btn:text-accent-foreground transition-all" />
                   </Button>
                 </DropdownMenuTrigger>
               </DropdownMenu>

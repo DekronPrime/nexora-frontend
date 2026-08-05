@@ -34,6 +34,7 @@ import {
   Folder,
   Plus,
   Settings,
+  Trash2,
   Users,
 } from "lucide-react";
 import Link from "next/link";
@@ -41,7 +42,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { priorityColors, priorityLabels } from "../components/kanban/task-card";
-import { iconMap } from "../components/modals/create-project-modal";
+import { iconMap, ProjectModal } from "../components/modals/project-modal";
 
 export const statusColors: Record<TaskStatus, string> = {
   todo: "bg-slate-200 text-slate-700",
@@ -155,6 +156,7 @@ export const ProjectPage = () => {
 
   const [taskModalOpen, setTaskModalOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState<Task | undefined>(undefined);
+  const [projectModalOpen, setProjectModalOpen] = useState(false);
   const [inviteModalOpen, setInviteModalOpen] = useState(false);
   const [defaultStatus, setDefaultStatus] = useState<TaskStatus>("todo");
   const [activityLogs, setActivityLogs] = useState<ActivityLog[]>([]);
@@ -225,6 +227,10 @@ export const ProjectPage = () => {
   const handleTaskClick = (task: Task) => {
     setSelectedTask(task);
     setTaskModalOpen(true);
+  };
+
+  const handleEditProject = () => {
+    setProjectModalOpen(true);
   };
 
   if (projectLoading) {
@@ -307,11 +313,19 @@ export const ProjectPage = () => {
         </div>
 
         <div className="flex items-center gap-2">
-          <Link href={`/projects/${projectId}/settings`}>
-            <Button variant="ghost" size="icon">
-              <Settings className="h-5 w-5" />
-            </Button>
-          </Link>
+          <Button variant="ghost" size="icon" onClick={handleEditProject}>
+            <Settings className="h-5 w-5" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="hover:border-destructive hover:bg-destructive/10 hover:text-destructive"
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
+          >
+            <Trash2 className="h-5 w-5" />
+          </Button>
         </div>
       </div>
 
@@ -602,6 +616,11 @@ export const ProjectPage = () => {
         onOpenChange={setInviteModalOpen}
         projectId={projectId}
         invite={inviteMember}
+      />
+      <ProjectModal
+        open={projectModalOpen}
+        onOpenChange={setProjectModalOpen}
+        project={project}
       />
     </div>
   );
