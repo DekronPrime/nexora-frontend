@@ -13,7 +13,9 @@ import { Input } from "@/src/components/ui/input";
 import { Label } from "@/src/components/ui/label";
 import { Textarea } from "@/src/components/ui/textarea";
 import { useProjects } from "@/src/hooks";
+
 import { cn } from "@/src/lib/utils";
+import { Project } from "@/src/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Briefcase,
@@ -30,7 +32,7 @@ import {
   Zap,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -72,7 +74,7 @@ export const iconMap = iconPresets.reduce(
   >,
 );
 
-const createProjectSchema = z.object({
+const projectSchema = z.object({
   title: z
     .string()
     .min(1, "Title is required")
@@ -85,20 +87,24 @@ const createProjectSchema = z.object({
   icon: z.string().min(1, "Please select an icon"),
 });
 
-type CreateProjectFormData = z.infer<typeof createProjectSchema>;
+type ProjectFormData = z.infer<typeof projectSchema>;
 
-interface CreateProjectModalProps {
+interface ProjectModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  project?: Project;
 }
 
-export function CreateProjectModal({
+export function ProjectModal({
   open,
   onOpenChange,
-}: CreateProjectModalProps) {
+  project,
+}: ProjectModalProps) {
   const router = useRouter();
-  const { createProject } = useProjects();
+  const { createProject, updateProject } = useProjects();
   const [isLoading, setIsLoading] = useState(false);
+
+  const isEdit = !!project;
 
   const {
     register,
@@ -107,33 +113,68 @@ export function CreateProjectModal({
     watch,
     reset,
     formState: { errors },
-  } = useForm<CreateProjectFormData>({
-    resolver: zodResolver(createProjectSchema),
+  } = useForm<ProjectFormData>({
+    resolver: zodResolver(projectSchema),
     defaultValues: {
       color: colorPresets[0],
       icon: iconPresets[0].id,
     },
   });
 
+  useEffect(() => {
+    if (project) {
+      reset({
+        title: project.title,
+        description: project.description,
+        color: project.color,
+        icon: project.icon,
+      });
+    } else {
+      reset({
+        title: "",
+        description: "",
+        color: colorPresets[0],
+        icon: iconPresets[0].id,
+      });
+    }
+  }, [project, open, reset]);
+
   const selectedColor = watch("color");
   const selectedIcon = watch("icon");
 
-  const onSubmit = async (data: CreateProjectFormData) => {
+  const onSubmit = async (data: ProjectFormData) => {
     setIsLoading(true);
+
     try {
-      const project = await createProject({
-        title: data.title,
-        description: data.description || "",
-        color: data.color,
-        icon: data.icon,
-      });
-      toast.success("Project created successfully");
+      if (isEdit) {
+        await updateProject(project.id, {
+          title: data.title,
+          description: data.description || "",
+          color: data.color,
+          icon: data.icon,
+        });
+
+        toast.success("Project updated");
+      } else {
+        const newProject = await createProject({
+          title: data.title,
+          description: data.description || "",
+          color: data.color,
+          icon: data.icon,
+        });
+
+        toast.success("Project created");
+
+        router.push(`/projects/${newProject.id}`);
+      }
+
       onOpenChange(false);
       reset();
-      router.push(`/projects/${project.id}`);
     } catch (error) {
       const message =
-        error instanceof Error ? error.message : "Failed to create project";
+        error instanceof Error
+          ? error.message
+          : "Failed to " + (isEdit ? "update" : "create") + " project";
       toast.error(message);
     } finally {
       setIsLoading(false);
@@ -144,9 +185,13 @@ export function CreateProjectModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>Create new project</DialogTitle>
+          <DialogTitle>
+            {isEdit ? "Edit project" : "Create new project"}
+          </DialogTitle>
           <DialogDescription>
-            Start organizing your tasks by creating a new project.
+            {isEdit
+              ? "Update your project information."
+              : "Start organizing your tasks by creating a new project."}
           </DialogDescription>
         </DialogHeader>
 
@@ -180,14 +225,14 @@ export function CreateProjectModal({
 
           <div className="space-y-2">
             <Label>Color</Label>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex justify-evenly flex-wrap gap-2">
               {colorPresets.map((color) => (
                 <button
                   key={color}
                   type="button"
                   onClick={() => setValue("color", color)}
                   className={cn(
-                    "w-8 h-8 rounded-lg transition-all",
+                    "w-20 h-10 rounded-lg transition-all",
                     selectedColor === color
                       ? "ring-2 ring-offset-2 ring-blue-500 scale-110"
                       : "hover:scale-105",
@@ -208,37 +253,21 @@ export function CreateProjectModal({
           <div className="space-y-2">
             <Label>Icon</Label>
             <div className="flex flex-wrap gap-2">
-              {/* {iconPresets.map((icon) => (
-                <button
-                  key={icon.id}
-                  type="button"
-                  onClick={() => setValue("icon", icon.id)}
-                  className={cn(
-                    "w-10 h-10 rounded-lg border-2 flex items-center justify-center transition-all capitalize text-sm",
-                    selectedIcon === icon.id
-                      ? "border-blue-500 bg-blue-50 text-blue-600"
-                      : "border-slate-200 hover:border-slate-300 text-slate-600",
-                  )}
-                >
-                  {icon.component}
-                </button>
-              ))} */}
               {iconPresets.map((icon) => {
-                const IconComponent = icon.component; // Отримуємо компонент
+                const IconComponent = icon.component;
                 return (
                   <button
                     key={icon.id}
                     type="button"
                     onClick={() => setValue("icon", icon.id)}
                     className={cn(
-                      "w-10 h-10 rounded-lg border-2 flex items-center justify-center transition-all",
+                      "w-14 h-14 rounded-lg border-2 flex items-center justify-center transition-all",
                       selectedIcon === icon.id
                         ? "border-blue-500 bg-blue-50 text-blue-600"
                         : "border-slate-200 hover:border-slate-300 text-slate-600",
                     )}
                   >
-                    {/* Рендеримо саму іконку, а не текст */}
-                    <IconComponent className="h-5 w-5" />
+                    <IconComponent className="h-7 w-7" />
                   </button>
                 );
               })}
@@ -256,12 +285,14 @@ export function CreateProjectModal({
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={isLoading}>
+            <Button type="submit">
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Creating...
+                  {isEdit ? "Saving..." : "Creating..."}
                 </>
+              ) : isEdit ? (
+                "Save changes"
               ) : (
                 "Create project"
               )}

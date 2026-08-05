@@ -4,7 +4,7 @@ import {
   priorityBorderColors,
   priorityColors,
 } from "@/src/components/kanban/task-card";
-import { iconMap } from "@/src/components/modals/create-project-modal";
+import { iconMap } from "@/src/components/modals/project-modal";
 import { EmptyState, ErrorState, LoadingState } from "@/src/components/states";
 import {
   Avatar,
