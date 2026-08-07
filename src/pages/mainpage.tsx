@@ -15,6 +15,8 @@ import {
 import { Button } from "../components/ui/button";
 import { PricingPlan } from "../types";
 import { PricingCard } from "../components/ui/pricing-card";
+import { KanbanBoard } from "../components/kanban";
+import { demoTasks } from "../data/demo-kanban";
 
 const features = [
   {
@@ -234,34 +236,15 @@ export default function MainPage() {
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.2 }}
-            className="mt-16 relative"
+            className="mt-16"
           >
-            <div className="absolute inset-0 z-10 pointer-events-none" />
-            <div className="bg-white rounded-2xl shadow-2xl border border-slate-200 p-6 max-w-6xl mx-auto">
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                {testColumns.map((column, i) => (
-                  <div key={i} className="bg-slate-50 rounded-xl p-4">
-                    <div className="flex items-center justify-between mb-3">
-                      <h3 className="font-semibold text-slate-700">
-                        {column.title}
-                      </h3>
-                      <span className="text-xs bg-slate-200 text-slate-600 px-2 py-1 rounded-full">
-                        {column.tasks.length}
-                      </span>
-                    </div>
-                    <div className="space-y-2">
-                      {column.tasks.map((task, j) => (
-                        <div
-                          key={j}
-                          className="bg-white p-3 rounded-lg border border-slate-200 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
-                        >
-                          <p className="text-sm text-slate-700">{task}</p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
+            <div className="bg-white rounded-2xl shadow-2xl border border-slate-200 p-6 w-full mx-auto">
+              <KanbanBoard
+                tasks={demoTasks}
+                onTaskStatusChange={() => {}}
+                onTaskClick={() => {}}
+                onAddTask={() => {}}
+              />
             </div>
           </motion.div>
         </div>
