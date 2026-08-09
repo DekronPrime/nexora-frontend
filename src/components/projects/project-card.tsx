@@ -50,7 +50,7 @@ export const ProjectCard = ({ project, onEdit }: ProjectCardProps) => {
                     {project.title}
                   </h3>
                   <p className="text-sm text-slate-500">
-                    {project._count?.tasks || 0} tasks
+                    {project.taskCount || 0} tasks
                   </p>
                 </div>
               </div>
