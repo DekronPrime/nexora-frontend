@@ -65,6 +65,7 @@ interface TaskModalProps {
   projectId: string;
   task?: Task;
   defaultStatus?: TaskStatus;
+  onSuccess?: () => void;
 }
 
 export function TaskModal({
@@ -73,6 +74,7 @@ export function TaskModal({
   projectId,
   task,
   defaultStatus = "todo",
+  onSuccess,
 }: TaskModalProps) {
   const getDefaultValues = (): TaskFormData => ({
     title: task?.title ?? "",
@@ -136,6 +138,7 @@ export function TaskModal({
       );
       onOpenChange(false);
       reset();
+      onSuccess?.();
     } catch (error) {
       console.error("Error creating task:", error);
       const message =

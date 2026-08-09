@@ -610,6 +610,7 @@ export const ProjectPage = () => {
         projectId={project.id}
         defaultStatus={defaultStatus}
         task={selectedTask}
+        onSuccess={() => fetchTasks()}
       />
       <InviteMemberModal
         open={inviteModalOpen}

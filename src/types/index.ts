@@ -30,6 +30,7 @@ export interface Project {
     tasks: number;
     members: number;
   };
+  taskCount: number;
 }
 
 export interface CreateProjectDto {
