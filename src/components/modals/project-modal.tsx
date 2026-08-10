@@ -93,12 +93,14 @@ interface ProjectModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   project?: Project;
+  onSuccess?: () => void;
 }
 
 export function ProjectModal({
   open,
   onOpenChange,
   project,
+  onSuccess,
 }: ProjectModalProps) {
   const router = useRouter();
   const { createProject, updateProject } = useProjects();
@@ -170,6 +172,7 @@ export function ProjectModal({
 
       onOpenChange(false);
       reset();
+      onSuccess?.();
     } catch (error) {
       const message =
         error instanceof Error
