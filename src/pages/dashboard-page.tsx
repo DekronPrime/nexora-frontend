@@ -188,6 +188,7 @@ export const DashboardPage = () => {
         open={projectModalOpen}
         onOpenChange={setProjectModalOpen}
         project={selectedProject}
+        onSuccess={() => fetchProjects()}
       />
     </div>
   );
