@@ -24,7 +24,7 @@ import {
   TabsTrigger,
 } from "@/src/components/ui/tabs";
 import { useMembers, useProject, useProjectTasks } from "@/src/hooks";
-import { activityService } from "@/src/lib/services";
+import { activityService, projectsService } from "@/src/lib/services";
 import { cn } from "@/src/lib/utils";
 import { ActivityLog, Task, TaskStatus } from "@/src/types";
 import { format } from "date-fns";
@@ -43,6 +43,7 @@ import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { priorityColors, priorityLabels } from "../components/kanban/task-card";
 import { iconMap, ProjectModal } from "../components/modals/project-modal";
+import { ConfirmationModal } from "../components/modals/confirmation-modal";
 
 export const statusColors: Record<TaskStatus, string> = {
   todo: "bg-slate-200 text-slate-700",
@@ -157,6 +158,7 @@ export const ProjectPage = () => {
   const [taskModalOpen, setTaskModalOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState<Task | undefined>(undefined);
   const [projectModalOpen, setProjectModalOpen] = useState(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [inviteModalOpen, setInviteModalOpen] = useState(false);
   const [defaultStatus, setDefaultStatus] = useState<TaskStatus>("todo");
   const [activityLogs, setActivityLogs] = useState<ActivityLog[]>([]);
@@ -231,6 +233,15 @@ export const ProjectPage = () => {
 
   const handleEditProject = () => {
     setProjectModalOpen(true);
+  };
+
+  const handleDeleteProject = () => {
+    setDeleteModalOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!project) return;
+    await projectsService.delete(project.id);
   };
 
   if (projectLoading) {
@@ -320,9 +331,7 @@ export const ProjectPage = () => {
             variant="ghost"
             size="icon"
             className="hover:border-destructive hover:bg-destructive/10 hover:text-destructive"
-            onClick={(e) => {
-              e.stopPropagation();
-            }}
+            onClick={handleDeleteProject}
           >
             <Trash2 className="h-5 w-5" />
           </Button>
@@ -622,6 +631,20 @@ export const ProjectPage = () => {
         open={projectModalOpen}
         onOpenChange={setProjectModalOpen}
         project={project}
+      />
+
+      <ConfirmationModal
+        open={deleteModalOpen}
+        onOpenChange={setDeleteModalOpen}
+        title="Delete project?"
+        description={`Are you sure you want to delete "${project.title}"? This will permanently delete all tasks and cannot be undone.`}
+        confirmLabel="Delete project"
+        variant="destructive"
+        onConfirm={handleConfirmDelete}
+        onSuccess={() => {
+          toast.success("Project deleted");
+          router.push("/dashboard");
+        }}
       />
     </div>
   );
