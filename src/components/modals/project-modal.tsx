@@ -166,8 +166,6 @@ export function ProjectModal({
         });
 
         toast.success("Project created");
-
-        router.push(`/projects/${newProject.id}`);
       }
 
       onOpenChange(false);
