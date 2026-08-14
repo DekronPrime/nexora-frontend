@@ -111,10 +111,7 @@ export const DashboardPage = () => {
                   </div>
                   <div>
                     <p className="text-2xl font-bold text-slate-900">
-                      {projects.reduce(
-                        (acc, p) => acc + (p._count?.tasks || 0),
-                        0,
-                      )}
+                      {projects.reduce((acc, p) => acc + (p.taskCount || 0), 0)}
                     </p>
                     <p className="text-sm font-bold font-sofia text-slate-500">
                       Total Tasks
@@ -131,7 +128,12 @@ export const DashboardPage = () => {
                     <CheckCircle className="h-5 w-5 text-emerald-600" />
                   </div>
                   <div>
-                    <p className="text-2xl font-bold text-slate-900">0</p>
+                    <p className="text-2xl font-bold text-slate-900">
+                      {projects.reduce(
+                        (acc, p) => acc + (p.completedTaskCount || 0),
+                        0,
+                      )}
+                    </p>
                     <p className="text-sm font-bold font-sofia text-slate-500">
                       Completed Tasks
                     </p>
@@ -147,7 +149,7 @@ export const DashboardPage = () => {
                     <Users className="h-5 w-5 text-purple-600" />
                   </div>
                   <div>
-                    <p className="text-2xl font-bold text-slate-900">0</p>
+                    <p className="text-2xl font-bold text-slate-900">1</p>
                     <p className="text-sm font-bold font-sofia text-slate-500">
                       Team Members
                     </p>

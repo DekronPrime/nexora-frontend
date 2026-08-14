@@ -637,7 +637,7 @@ export const ProjectPage = () => {
         open={deleteModalOpen}
         onOpenChange={setDeleteModalOpen}
         title="Delete project?"
-        description={`Are you sure you want to delete "${project.title}"? This will permanently delete all tasks and cannot be undone.`}
+        description={`Are you sure you want to delete project "${project.title}"? This will permanently delete all tasks and cannot be undone.`}
         confirmLabel="Delete project"
         variant="destructive"
         onConfirm={handleConfirmDelete}
