@@ -31,6 +31,7 @@ export interface Project {
     members: number;
   };
   taskCount: number;
+  completedTaskCount: number;
 }
 
 export interface CreateProjectDto {
